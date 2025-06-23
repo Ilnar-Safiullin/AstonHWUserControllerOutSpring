@@ -1,24 +1,20 @@
-package userApp;
+package userApp.dao;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import userApp.configuration.HibernateConfiguration;
+import userApp.exception.UserNotFoundException;
+import userApp.model.User;
 
 public class UserStorage {
     private static final Logger logger = LoggerFactory.getLogger(UserStorage.class);
-    private SessionFactory sessionFactory;
-
-    public UserStorage() {
-        HibernateConfiguration hibernateConfiguration = new HibernateConfiguration();
-        this.sessionFactory = hibernateConfiguration.sessionFactory();
-    }
 
 
     public User addUser(User user) {
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.save(user);
             transaction.commit();
@@ -33,13 +29,13 @@ public class UserStorage {
     }
 
     public User getUserById(int userId) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             User user = session.get(User.class, userId);
             if (user != null) {
                 logger.info("Пользователь найден с id {}", userId);
             } else {
                 logger.warn("Пользователь не найден с id {}", userId);
-                throw new NotFoundException("Пользователь не найден");
+                throw new UserNotFoundException("Пользователь не найден");
             }
             return user;
         } catch (Exception e) {
@@ -50,7 +46,7 @@ public class UserStorage {
 
     public User updateUser(User user) {
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             User existingUser = session.get(User.class, user.getId());
@@ -64,7 +60,7 @@ public class UserStorage {
             } else {
                 logger.warn("Пользователь не обновлен, не найден пользователь с id {}", existingUser.getId());
                 transaction.rollback();
-                throw new NotFoundException("Пользователь не найден");
+                throw new UserNotFoundException("Пользователь не найден");
             }
         } catch (Exception e) {
             if (transaction != null) {
@@ -77,7 +73,7 @@ public class UserStorage {
 
     public void remove(int userId) {
         Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             User user = session.get(User.class, userId);
             if (user != null) {
@@ -87,7 +83,7 @@ public class UserStorage {
             } else {
                 logger.warn("Пользователь не найден и не удален с id {}", userId);;
                 transaction.rollback();
-                throw new NotFoundException("Пользователь не найден");
+                throw new UserNotFoundException("Пользователь не найден");
             }
         } catch (Exception e) {
             if (transaction != null) {
