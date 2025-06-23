@@ -32,7 +32,6 @@ public class User {
         this.created_at = LocalDate.now();
     }
 
-
     public User(String name, String email, int age) {
         this.name = name;
         this.email = email;

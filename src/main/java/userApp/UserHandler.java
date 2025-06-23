@@ -38,7 +38,7 @@ public class UserHandler {
 
 
     private static void createUser() {
-        logger.warn("Создание нового пользователя");
+        logger.info("Создание нового пользователя");
         System.out.println("Добавление нового пользователя\n");
         System.out.println("Введите имя");
         String name = scanner.nextLine();
