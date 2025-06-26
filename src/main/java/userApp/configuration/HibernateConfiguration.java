@@ -14,4 +14,8 @@ public class HibernateConfiguration {
         }
         return sessionFactory;
     }
+
+    public static void setSessionFactory(SessionFactory sessionFactory) {
+        HibernateConfiguration.sessionFactory = sessionFactory;
+    }
 }

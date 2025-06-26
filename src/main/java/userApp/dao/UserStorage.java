@@ -12,7 +12,7 @@ public class UserStorage {
     private static final Logger logger = LoggerFactory.getLogger(UserStorage.class);
 
 
-    public User addUser(User user) {
+    public User addUser(User user) throws Exception {
         Transaction transaction = null;
         try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -23,12 +23,13 @@ public class UserStorage {
             if (transaction != null) {
                 transaction.rollback();
             }
-            logger.warn("Ошибка при добавлении пользователя", e);
+            logger.error("Ошибка при добавлении пользователя", e);
+            throw e;
         }
         return user;
     }
 
-    public User getUserById(int userId) {
+    public User getUserById(int userId) throws Exception {
         try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             User user = session.get(User.class, userId);
             if (user != null) {
@@ -39,12 +40,12 @@ public class UserStorage {
             }
             return user;
         } catch (Exception e) {
-            logger.warn("Ошибка при поиски пользователя", e);
-            return null;
+            logger.error("Ошибка при поиски пользователя", e);
+            throw e;
         }
     }
 
-    public User updateUser(User user) {
+    public User updateUser(User user) throws Exception {
         Transaction transaction = null;
         try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -66,12 +67,13 @@ public class UserStorage {
             if (transaction != null) {
                 transaction.rollback();
             }
-            logger.warn("Ошибка обновления пользователя", e);
+            logger.error("Ошибка обновления пользователя", e);
+            throw e;
         }
         return user;
     }
 
-    public void remove(int userId) {
+    public void remove(int userId) throws Exception {
         Transaction transaction = null;
         try (Session session = HibernateConfiguration.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -89,7 +91,8 @@ public class UserStorage {
             if (transaction != null) {
                 transaction.rollback();
             }
-            logger.warn("Ошибка удаления пользователя", e);
+            logger.error("Ошибка удаления пользователя", e);
+            throw e;
         }
     }
 }
